@@ -36,14 +36,15 @@ async def request_wrapped(wallet, *args, **kwargs):
 
     s.headers.update({"X-Cashu": token})
     resp = s.request(*args, **kwargs)
-
-    await wallet.invalidate(proofs, check_spendable=False)
-    if VERBOSE:
-        print(f"Wallet balance: {sum_proofs(wallet.proofs)} sats")
     try:
         resp.raise_for_status()
     except Exception as e:
         print(e)
+    else:
+        await wallet.invalidate(proofs, check_spendable=False)
+        if VERBOSE:
+            print(f"Wallet balance: {sum_proofs(wallet.proofs)} sats")
+
     resp_dict = resp.json()
     print(resp_dict)
     return resp
